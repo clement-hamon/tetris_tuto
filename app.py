@@ -1,18 +1,20 @@
 import pygame
 from pprint import pprint
 
-screen_width = 300
-screen_height = 600
+screen_width = 150
+screen_height = 300
 block_size = 30
+num_of_rows = screen_height // block_size
+num_of_cols = screen_width // block_size
 
 screen = pygame.display.set_mode([screen_width, screen_height])
 
 def draw_grid(surface):
     # draw horizontal lines
-    for i in range(screen_height // block_size):
+    for i in range(num_of_rows):
         pygame.draw.line(surface, (125, 125, 125), (0, block_size * i),(screen_width, block_size * i))
     # draw vertical lines
-    for j in range(screen_width // block_size):
+    for j in range(num_of_cols):
         pygame.draw.line(surface, (125, 125, 125), (block_size * j, 0),(block_size * j, screen_height))
 
 class Block(object):
@@ -67,7 +69,7 @@ while run:
         
         if event.type == fall_event:
             next_pos = current_block.get_next_position((0, 1))
-            if next_pos[1] == 20 or collide(current_block.get_next_position((0, 1)), blocks):
+            if next_pos[1] == num_of_rows or collide(current_block.get_next_position((0, 1)), blocks):
                 blocks.append(current_block.get_position())
                 current_block = Block(1, 2)
             else:
