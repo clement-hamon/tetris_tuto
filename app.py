@@ -1,4 +1,5 @@
 import pygame
+from pprint import pprint
 
 screen_width = 300
 screen_height = 600
@@ -19,6 +20,9 @@ class Block(object):
         self.x = x
         self.y = y
     
+    def get_position(self):
+        return (self.x, self.y)
+
     def falls(self):
         self.y += 1
     
@@ -28,11 +32,13 @@ class Block(object):
     def draw(self, surface):
         pygame.draw.rect(surface, (125, 125, 125), (self.x * block_size, self.y * block_size, block_size, block_size))
 
-current_block = Block(1, 2)
 
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
+
+current_block = Block(1, 2)
+blocks = []
 
 run = True
 while run:
@@ -50,11 +56,15 @@ while run:
         if event.type == fall_event:
             current_block.falls()
 
-    if current_block.y >= screen_height // block_size:
+    if current_block.y == 20:
+        blocks.append(current_block.get_position())
         current_block = Block(1, 2)
 
     screen.fill([0, 0, 0])
     draw_grid(screen)
     current_block.draw(screen)
+    pprint(blocks)
+    for block in blocks:
+        pygame.draw.rect(screen, (125, 125, 125), ((block[0]) * block_size, (block[1] - 1) * block_size, block_size, block_size))
 
     pygame.display.update()
