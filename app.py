@@ -57,9 +57,13 @@ while run:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                current_block.slides(-1)
+                next_pos = current_block.get_next_position((-1, 0))
+                if not collide(next_pos, blocks):
+                    current_block.slides(-1)
             if event.key == pygame.K_RIGHT:
-                current_block.slides(1)
+                next_pos = current_block.get_next_position((1, 0))
+                if not collide(next_pos, blocks):
+                    current_block.slides(1)
         
         if event.type == fall_event:
             current_block.falls()
