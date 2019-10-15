@@ -43,6 +43,12 @@ def collide(position, other_positions):
     else:
         return False
 
+def is_outside(position):
+    if position[0] < 0 or num_of_cols - 1 < position[0]:
+        return True
+    else:
+        return False
+
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
@@ -60,11 +66,11 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 next_pos = current_block.get_next_position((-1, 0))
-                if not collide(next_pos, blocks):
+                if not (collide(next_pos, blocks) or is_outside(next_pos)):
                     current_block.slides(-1)
             if event.key == pygame.K_RIGHT:
                 next_pos = current_block.get_next_position((1, 0))
-                if not collide(next_pos, blocks):
+                if not (collide(next_pos, blocks) or is_outside(next_pos)):
                     current_block.slides(1)
         
         if event.type == fall_event:
@@ -79,7 +85,7 @@ while run:
     screen.fill([0, 0, 0])
     draw_grid(screen)
     current_block.draw(screen)
-    pprint(blocks)
+
     for block in blocks:
         pygame.draw.rect(screen, (125, 125, 125), ((block[0]) * block_size, (block[1]) * block_size, block_size, block_size))
 
