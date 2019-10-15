@@ -37,24 +37,36 @@ class Block(object):
     def draw(self, surface):
         pygame.draw.rect(surface, (125, 125, 125), (self.x * block_size, self.y * block_size, block_size, block_size))
 
-def collide(position, other_positions):
-    if position in other_positions:
-        return True
-    else:
-        return False
+class BlocksManager(object):
+    def __init__(self, limit_x, limit_y):
+        self.blocks = []
+        self.limit_x = limit_x
+        self.limit_y = limit_y
+    
+    def add_block(self, position):
+        self.blocks.append(position)
 
-def is_outside(position):
-    if position[0] < 0 or num_of_cols - 1 < position[0]:
-        return True
-    else:
-        return False
+    def is_valid(self, position):
+        return not (self.collide(position) or self.is_outside(position))
+    
+    def collide(self, position):
+        if position in self.blocks:
+            return True
+        else:
+            return False
+
+    def is_outside(self, position):
+        if position[0] < self.limit_x['min'] or self.limit_x['max'] < position[0] or self.limit_y['max'] < position[1]:
+            return True
+        else:
+            return False
 
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
 
 current_block = Block(1, 2)
-blocks = []
+blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
 run = True
 while run:
@@ -66,27 +78,28 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 next_pos = current_block.get_next_position((-1, 0))
-                if not (collide(next_pos, blocks) or is_outside(next_pos)):
+                if blocks_manager.is_valid(next_pos):
                     current_block.slides(-1)
             if event.key == pygame.K_RIGHT:
                 next_pos = current_block.get_next_position((1, 0))
-                if not (collide(next_pos, blocks) or is_outside(next_pos)):
+                if blocks_manager.is_valid(next_pos):
                     current_block.slides(1)
         
         if event.type == fall_event:
             next_pos = current_block.get_next_position((0, 1))
-            if next_pos[1] == num_of_rows or collide(current_block.get_next_position((0, 1)), blocks):
-                blocks.append(current_block.get_position())
-                current_block = Block(1, 2)
-            else:
+            if blocks_manager.is_valid(next_pos):
                 current_block.falls()
+            else:
+                blocks_manager.add_block(current_block.get_position())
+                current_block = Block(1, 2)
+
 
 
     screen.fill([0, 0, 0])
     draw_grid(screen)
     current_block.draw(screen)
 
-    for block in blocks:
+    for block in blocks_manager.blocks:
         pygame.draw.rect(screen, (125, 125, 125), ((block[0]) * block_size, (block[1]) * block_size, block_size, block_size))
 
     pygame.display.update()
