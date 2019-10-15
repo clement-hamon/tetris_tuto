@@ -32,6 +32,11 @@ class Block(object):
     def draw(self, surface):
         pygame.draw.rect(surface, (125, 125, 125), (self.x * block_size, self.y * block_size, block_size, block_size))
 
+def collide(positions, other_positions):
+    for position in positions:
+        if position in other_positions:
+            return True
+    return False
 
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
@@ -56,7 +61,7 @@ while run:
         if event.type == fall_event:
             current_block.falls()
 
-    if current_block.y == 20:
+    if current_block.y == 19 or collide(current_block.get_position(), blocks):
         blocks.append(current_block.get_position())
         current_block = Block(1, 2)
 
@@ -65,6 +70,6 @@ while run:
     current_block.draw(screen)
     pprint(blocks)
     for block in blocks:
-        pygame.draw.rect(screen, (125, 125, 125), ((block[0]) * block_size, (block[1] - 1) * block_size, block_size, block_size))
+        pygame.draw.rect(screen, (125, 125, 125), ((block[0]) * block_size, (block[1]) * block_size, block_size, block_size))
 
     pygame.display.update()
