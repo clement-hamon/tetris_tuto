@@ -66,11 +66,13 @@ while run:
                     current_block.slides(1)
         
         if event.type == fall_event:
-            current_block.falls()
-
-            if current_block.y == 19 or collide(current_block.get_next_position((0, 1)), blocks):
+            next_pos = current_block.get_next_position((0, 1))
+            if next_pos[1] == 20 or collide(current_block.get_next_position((0, 1)), blocks):
                 blocks.append(current_block.get_position())
                 current_block = Block(1, 2)
+            else:
+                current_block.falls()
+
 
     screen.fill([0, 0, 0])
     draw_grid(screen)
