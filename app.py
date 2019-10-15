@@ -14,29 +14,39 @@ def draw_grid(surface):
     for j in range(screen_width // block_size):
         pygame.draw.line(surface, (125, 125, 125), (block_size * j, 0),(block_size * j, screen_height))
 
-def draw_block(surface, x, y):
-    pygame.draw.rect(surface, (125, 125, 125), (x * block_size, y * block_size, block_size, block_size))
+class Block(object):
+    def __init__(self, x,y):
+        self.x = x
+        self.y = y
+    
+    def falls(self):
+        self.y += 1
+    
+    def slides(self, coef):
+        self.x += coef
 
-x = 1
-y = 2
+    def draw(self, surface):
+        pygame.draw.rect(surface, (125, 125, 125), (self.x * block_size, self.y * block_size, block_size, block_size))
+
+current_block = Block(1, 2)
 
 run = True
 while run:
     pygame.time.wait(500)
     
-    y += 1
+    current_block.falls()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                x -= 1
+                current_block.slides(-1)
             if event.key == pygame.K_RIGHT:
-                x += 1
+                current_block.slides(1)
 
     screen.fill([0, 0, 0])
     draw_grid(screen)
-    draw_block(screen, x, y)
+    current_block.draw(screen)
 
     pygame.display.update()
