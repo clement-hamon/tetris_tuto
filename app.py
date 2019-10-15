@@ -30,7 +30,6 @@ class Block(object):
 
 current_block = Block(1, 2)
 
-
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
@@ -51,6 +50,8 @@ while run:
         if event.type == fall_event:
             current_block.falls()
 
+    if current_block.y >= screen_height // block_size:
+        current_block = Block(1, 2)
 
     screen.fill([0, 0, 0])
     draw_grid(screen)
