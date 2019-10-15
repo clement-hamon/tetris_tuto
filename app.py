@@ -17,6 +17,9 @@ def draw_grid(surface):
     for j in range(screen_width // block_size):
         pygame.draw.line(surface, (125, 125, 125), (block_size * j, 0),(block_size * j, screen_height))
 
+def draw_block(surface, x, y):
+    pygame.draw.rect(surface, (125, 125, 125), (x * block_size, y * block_size, block_size, block_size))
+
 run = True
 while run:
     for event in pygame.event.get():
@@ -24,4 +27,6 @@ while run:
             run = False
 
     draw_grid(screen)
+    draw_block(screen, 1, 2)
+
     pygame.display.update()
