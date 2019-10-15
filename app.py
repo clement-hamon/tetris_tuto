@@ -30,11 +30,14 @@ class Block(object):
 
 current_block = Block(1, 2)
 
+
+time_elapsed = pygame.time.get_ticks()
+fall_event = pygame.USEREVENT + 1
+pygame.time.set_timer(fall_event, 500)
+
 run = True
 while run:
-    pygame.time.wait(500)
     
-    current_block.falls()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -44,6 +47,10 @@ while run:
                 current_block.slides(-1)
             if event.key == pygame.K_RIGHT:
                 current_block.slides(1)
+        
+        if event.type == fall_event:
+            current_block.falls()
+
 
     screen.fill([0, 0, 0])
     draw_grid(screen)
