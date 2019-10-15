@@ -61,6 +61,19 @@ class BlocksManager(object):
         else:
             return False
 
+    def remove_full_rows(self):
+        block_counter = self.count_blocks_per_row()
+        pprint(block_counter)
+
+    def count_blocks_per_row(self):
+        blocks_per_row = {}  # {12: 2, 13: 5,... }
+        for block in self.blocks:
+            if not (block[1] in blocks_per_row):
+                blocks_per_row[block[1]] = 1
+            else:
+                blocks_per_row[block[1]] += 1
+        return blocks_per_row
+
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
@@ -84,6 +97,8 @@ while run:
                 next_pos = current_block.get_next_position((1, 0))
                 if blocks_manager.is_valid(next_pos):
                     current_block.slides(1)
+            if event.key == pygame.K_SPACE:
+                blocks_manager.remove_full_rows()
         
         if event.type == fall_event:
             next_pos = current_block.get_next_position((0, 1))
@@ -92,7 +107,6 @@ while run:
             else:
                 blocks_manager.add_block(current_block.get_position())
                 current_block = Block(1, 2)
-
 
 
     screen.fill([0, 0, 0])
