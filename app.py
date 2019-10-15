@@ -63,7 +63,11 @@ class BlocksManager(object):
 
     def remove_full_rows(self):
         block_counter = self.count_blocks_per_row()
-        pprint(block_counter)
+        for row, count in block_counter.items():
+            if count >= num_of_cols:
+                blocks_to_remove = [(x, row) for x in range(num_of_cols)]
+                for block in blocks_to_remove:
+                    self.blocks.pop(self.blocks.index(block))
 
     def count_blocks_per_row(self):
         blocks_per_row = {}  # {12: 2, 13: 5,... }
@@ -97,9 +101,8 @@ while run:
                 next_pos = current_block.get_next_position((1, 0))
                 if blocks_manager.is_valid(next_pos):
                     current_block.slides(1)
-            if event.key == pygame.K_SPACE:
-                blocks_manager.remove_full_rows()
-        
+
+
         if event.type == fall_event:
             next_pos = current_block.get_next_position((0, 1))
             if blocks_manager.is_valid(next_pos):
@@ -107,6 +110,7 @@ while run:
             else:
                 blocks_manager.add_block(current_block.get_position())
                 current_block = Block(1, 2)
+                blocks_manager.remove_full_rows()
 
 
     screen.fill([0, 0, 0])
