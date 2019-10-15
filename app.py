@@ -23,8 +23,8 @@ class Block(object):
     def get_position(self):
         return (self.x, self.y)
 
-    def get_next_position(self):
-        return (self.x, self.y + 1)
+    def get_next_position(self, position):
+        return (self.x + position[0], self.y + position[1])
 
     def falls(self):
         self.y += 1
@@ -63,8 +63,8 @@ while run:
         
         if event.type == fall_event:
             current_block.falls()
-            
-            if current_block.y == 19 or collide(current_block.get_next_position(), blocks):
+
+            if current_block.y == 19 or collide(current_block.get_next_position((0, 1)), blocks):
                 blocks.append(current_block.get_position())
                 current_block = Block(1, 2)
 
