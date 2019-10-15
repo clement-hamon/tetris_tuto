@@ -68,6 +68,13 @@ class BlocksManager(object):
                 blocks_to_remove = [(x, row) for x in range(num_of_cols)]
                 for block in blocks_to_remove:
                     self.blocks.pop(self.blocks.index(block))
+                for y in range(1, row + 1)[::-1]:
+                    for x in range(num_of_cols):
+                        if (x, y - 1) in self.blocks:
+                            self.blocks.append((x, y))
+                            self.blocks.pop(self.blocks.index((x, y - 1)))
+        
+
 
     def count_blocks_per_row(self):
         blocks_per_row = {}  # {12: 2, 13: 5,... }
@@ -80,9 +87,9 @@ class BlocksManager(object):
 
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
-pygame.time.set_timer(fall_event, 500)
+pygame.time.set_timer(fall_event, 200)
 
-current_block = Block(1, 2)
+current_block = Block(0, 0)
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
 run = True
@@ -109,7 +116,7 @@ while run:
                 current_block.falls()
             else:
                 blocks_manager.add_block(current_block.get_position())
-                current_block = Block(1, 2)
+                current_block = Block(0, 0)
                 blocks_manager.remove_full_rows()
 
 
