@@ -29,6 +29,12 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                x -= 1
+            if event.key == pygame.K_RIGHT:
+                x += 1
+
     screen.fill([0, 0, 0])
     draw_grid(screen)
     draw_block(screen, x, y)
