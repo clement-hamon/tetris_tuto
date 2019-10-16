@@ -8,8 +8,11 @@ num_of_rows = screen_height // block_size
 num_of_cols = screen_width // block_size
 
 screen = pygame.display.set_mode([screen_width, screen_height])
-L = [(0,0), 
-    (0,1), (1, 1), (2, 1)]
+L = ['.....',
+      '...0.',
+      '.000.',
+      '.....',
+      '.....']
 
 def draw_grid(surface):
     # draw horizontal lines
@@ -21,7 +24,7 @@ def draw_grid(surface):
 
 class Piece(object):
     def __init__(self, shape, x, y):
-        self.shape = shape
+        self.shape = self.convert_shape_format(shape)
         self.x = x
         self.y = y
     
@@ -41,6 +44,14 @@ class Piece(object):
         positions = []
         for position in self.shape:
             positions.append((self.x + position[0] + next_position[0], self.y  + position[1] + next_position[1]))
+        return positions
+    
+    def convert_shape_format(self, shape):
+        positions = []
+        for y, row in enumerate(shape):
+            for x, col in enumerate(row):
+                if shape[y][x] == "0":
+                    positions.append((x, y))
         return positions
 
     def falls(self):
@@ -109,7 +120,6 @@ fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
 
 current_piece = Piece(L, 1, 1)
-current_block = Block(0, 0)
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
 run = True
