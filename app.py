@@ -236,12 +236,14 @@ class BlocksManager(object):
                 blocks_per_row[block[1]] += 1
         return dict(sorted(blocks_per_row.items()))
 
+pygame.init()
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
-
+font = pygame.font.SysFont("arial", 30)
 current_piece = Piece.create()
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
+score = 0
 
 run = True
 while run:
@@ -289,5 +291,7 @@ while run:
         pygame.draw.rect(screen, color, ((position[0]) * block_size + game_x, (position[1]) * block_size+ game_y, block_size, block_size))
     
     draw_grid(screen)
+    text = font.render(str(score), True, (125, 125, 125))
+    screen.blit(text, ((screen_width // 2) - (text.get_width() // 2), 10))
 
     pygame.display.update()
