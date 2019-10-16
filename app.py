@@ -8,6 +8,8 @@ num_of_rows = screen_height // block_size
 num_of_cols = screen_width // block_size
 
 screen = pygame.display.set_mode([screen_width, screen_height])
+L = [(0,0), 
+    (0,1), (1, 1), (2, 1)]
 
 def draw_grid(surface):
     # draw horizontal lines
@@ -18,7 +20,7 @@ def draw_grid(surface):
         pygame.draw.line(surface, (125, 125, 125), (block_size * j, 0),(block_size * j, screen_height))
 
 class Block(object):
-    def __init__(self, x,y):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
     
@@ -37,6 +39,20 @@ class Block(object):
     def draw(self, surface):
         pygame.draw.rect(surface, (125, 125, 125), (self.x * block_size, self.y * block_size, block_size, block_size))
 
+class Piece(object):
+    def __init__(self, shape, x, y):
+        self.shape = shape
+        self.x = x
+        self.y = y
+    
+    def get_position(self):
+        return (self.x, self.y)
+    
+    def draw(self, surface):
+        for position in self.shape:
+            pygame.draw.rect(surface, (125, 125, 125), ((self.x + position[0])* block_size, (self.y + position[1]) * block_size, block_size, block_size))
+
+
 class BlocksManager(object):
     def __init__(self, limit_x, limit_y):
         self.blocks = []
@@ -50,16 +66,10 @@ class BlocksManager(object):
         return not (self.collide(position) or self.is_outside(position))
     
     def collide(self, position):
-        if position in self.blocks:
-            return True
-        else:
-            return False
+        return (position in self.blocks)
 
     def is_outside(self, position):
-        if position[0] < self.limit_x['min'] or self.limit_x['max'] < position[0] or self.limit_y['max'] < position[1]:
-            return True
-        else:
-            return False
+        return (position[0] < self.limit_x['min'] or self.limit_x['max'] < position[0] or self.limit_y['max'] < position[1])
 
     def remove_full_rows(self):
         block_counter = self.count_blocks_per_row()
@@ -73,8 +83,6 @@ class BlocksManager(object):
                         if (x, y - 1) in self.blocks:
                             self.blocks.append((x, y))
                             self.blocks.pop(self.blocks.index((x, y - 1)))
-        
-
 
     def count_blocks_per_row(self):
         blocks_per_row = {}  # {12: 2, 13: 5,... }
@@ -89,6 +97,7 @@ time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 200)
 
+current_piece = Piece(L, 2, 3)
 current_block = Block(0, 0)
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
@@ -109,7 +118,6 @@ while run:
                 if blocks_manager.is_valid(next_pos):
                     current_block.slides(1)
 
-
         if event.type == fall_event:
             next_pos = current_block.get_next_position((0, 1))
             if blocks_manager.is_valid(next_pos):
@@ -123,6 +131,7 @@ while run:
     screen.fill([0, 0, 0])
     draw_grid(screen)
     current_block.draw(screen)
+    current_piece.draw(screen)
 
     for block in blocks_manager.blocks:
         pygame.draw.rect(screen, (125, 125, 125), ((block[0]) * block_size, (block[1]) * block_size, block_size, block_size))
