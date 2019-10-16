@@ -133,6 +133,10 @@ class Piece(object):
         self.rotation = 0
         self.blocks_positions = self.convert_shape_format(shape[0])
     
+    @staticmethod
+    def create():
+        return Piece(random.choice(shapes),random.choice(colors), 1, 1)
+
     def get_position(self):
         return (self.x, self.y)
     
@@ -231,7 +235,7 @@ time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
 
-current_piece = Piece(random.choice(shapes),random.choice(colors), 1, 1)
+current_piece = Piece.create()
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
 run = True
@@ -250,6 +254,10 @@ while run:
                 next_pos = current_piece.get_next_blocks_position((1, 0))
                 if blocks_manager.are_valid(next_pos):
                     current_piece.slides(1)
+            if event.key == pygame.K_DOWN:
+                next_pos = current_piece.get_next_blocks_position((0, 1))
+                if blocks_manager.are_valid(next_pos):
+                    current_piece.falls()
             if event.key == pygame.K_UP:
                 next_pos = current_piece.get_next_rotation_blocks_position()
                 if blocks_manager.are_valid(next_pos):
@@ -261,7 +269,7 @@ while run:
                 current_piece.falls()
             else:
                 blocks_manager.add_blocks(current_piece.get_blocks_position(), current_piece.color)
-                current_piece = Piece(random.choice(shapes),random.choice(colors), 1, 1)
+                current_piece = Piece.create()
                 blocks_manager.remove_full_rows()
 
 
