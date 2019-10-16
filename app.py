@@ -63,6 +63,14 @@ class Piece(object):
         for position in self.blocks_positions:
             positions.append((self.x + position[0] + next_position[0], self.y  + position[1] + next_position[1]))
         return positions
+
+    def get_next_rotation_blocks_position(self):
+        positions = []
+        current_shape = self.shape[(self.rotation + 1) % len(self.shape)]
+        next_blocks_positions = self.convert_shape_format(current_shape)
+        for position in next_blocks_positions:
+            positions.append((self.x + position[0], self.y  + position[1]))
+        return positions
     
     def convert_shape_format(self, shape):
         positions = []
@@ -162,7 +170,9 @@ while run:
                 if blocks_manager.are_valid(next_pos):
                     current_piece.slides(1)
             if event.key == pygame.K_UP:
-                current_piece.rotate()
+                next_pos = current_piece.get_next_rotation_blocks_position()
+                if blocks_manager.are_valid(next_pos):
+                    current_piece.rotate()
 
         if event.type == fall_event:
             next_pos = current_piece.get_next_blocks_position((0, 1))
