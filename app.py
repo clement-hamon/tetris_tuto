@@ -135,7 +135,7 @@ class Piece(object):
     
     @staticmethod
     def create():
-        return Piece(random.choice(shapes),random.choice(colors), 1, 1)
+        return Piece(random.choice(shapes),random.choice(colors), 1, -3)
 
     def get_position(self):
         return (self.x, self.y)
