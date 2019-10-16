@@ -113,6 +113,7 @@ T = [['.....',
       '.....']]
 
 shapes = [S, Z, I, O, J, L, T]
+colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
 
 def draw_grid(surface):
     # draw horizontal lines
@@ -123,8 +124,9 @@ def draw_grid(surface):
         pygame.draw.line(surface, (125, 125, 125), (block_size * j, 0),(block_size * j, screen_height))
 
 class Piece(object):
-    def __init__(self, shape, x, y):
+    def __init__(self, shape, color, x, y):
         self.shape = shape
+        self.color = color
         self.x = x
         self.y = y
         self.rotation = 0
@@ -177,12 +179,12 @@ class Piece(object):
 
     def draw(self, surface):
         for position in self.blocks_positions:
-            pygame.draw.rect(surface, (125, 125, 125), ((self.x + position[0])* block_size, (self.y + position[1]) * block_size, block_size, block_size))
+            pygame.draw.rect(surface, self.color, ((self.x + position[0])* block_size, (self.y + position[1]) * block_size, block_size, block_size))
 
 
 class BlocksManager(object):
     def __init__(self, limit_x, limit_y):
-        self.blocks = []
+        self.blocks = [] # [(1, 2), (1, 3), ...]
         self.limit_x = limit_x
         self.limit_y = limit_y
     
@@ -234,7 +236,7 @@ time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
 
-current_piece = Piece(random.choice(shapes), 1, 1)
+current_piece = Piece(random.choice(shapes),random.choice(colors), 1, 1)
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
 run = True
@@ -264,7 +266,7 @@ while run:
                 current_piece.falls()
             else:
                 blocks_manager.add_blocks(current_piece.get_blocks_position())
-                current_piece = Piece(random.choice(shapes), 1, 1)
+                current_piece = Piece(random.choice(shapes),random.choice(colors), 1, 1)
                 blocks_manager.remove_full_rows()
 
 
