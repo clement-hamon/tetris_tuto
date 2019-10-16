@@ -1,13 +1,74 @@
 import pygame
+import random
 from pprint import pprint
 
-screen_width = 150
-screen_height = 300
+screen_width = 300
+screen_height = 600
 block_size = 30
 num_of_rows = screen_height // block_size
 num_of_cols = screen_width // block_size
 
 screen = pygame.display.set_mode([screen_width, screen_height])
+
+S = [['.....',
+      '.....',
+      '..00.',
+      '.00..',
+      '.....'],
+     ['.....',
+      '..0..',
+      '..00.',
+      '...0.',
+      '.....']]
+
+Z = [['.....',
+      '.....',
+      '.00..',
+      '..00.',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.00..',
+      '.0...',
+      '.....']]
+
+I = [['..0..',
+      '..0..',
+      '..0..',
+      '..0..',
+      '.....'],
+     ['.....',
+      '0000.',
+      '.....',
+      '.....',
+      '.....']]
+
+O = [['.....',
+      '.....',
+      '.00..',
+      '.00..',
+      '.....']]
+
+J = [['.....',
+      '.0...',
+      '.000.',
+      '.....',
+      '.....'],
+     ['.....',
+      '..00.',
+      '..0..',
+      '..0..',
+      '.....'],
+     ['.....',
+      '.....',
+      '.000.',
+      '...0.',
+      '.....'],
+     ['.....',
+      '..0..',
+      '..0..',
+      '.00..',
+      '.....']]
 
 L = [['.....',
       '...0.',
@@ -29,6 +90,29 @@ L = [['.....',
       '..0..',
       '..0..',
       '.....']]
+
+T = [['.....',
+      '..0..',
+      '.000.',
+      '.....',
+      '.....'],
+     ['.....',
+      '..0..',
+      '..00.',
+      '..0..',
+      '.....'],
+     ['.....',
+      '.....',
+      '.000.',
+      '..0..',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.00..',
+      '..0..',
+      '.....']]
+
+shapes = [S, Z, I, O, J, L, T]
 
 def draw_grid(surface):
     # draw horizontal lines
@@ -150,7 +234,7 @@ time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
 pygame.time.set_timer(fall_event, 500)
 
-current_piece = Piece(L, 1, 1)
+current_piece = Piece(random.choice(shapes), 1, 1)
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
 run = True
@@ -180,7 +264,7 @@ while run:
                 current_piece.falls()
             else:
                 blocks_manager.add_blocks(current_piece.get_blocks_position())
-                current_piece = Piece(L, 1, 1)
+                current_piece = Piece(random.choice(shapes), 1, 1)
                 blocks_manager.remove_full_rows()
 
 
