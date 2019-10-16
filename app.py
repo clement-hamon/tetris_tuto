@@ -78,6 +78,11 @@ class Piece(object):
     def slides(self, coef):
         self.x += coef
     
+    def rotate(self):
+        self.rotation += 1
+        current_shape = self.shape[(self.rotation) % len(self.shape)]
+        self.blocks_positions = self.convert_shape_format(current_shape)
+
     def draw(self, surface):
         for position in self.blocks_positions:
             pygame.draw.rect(surface, (125, 125, 125), ((self.x + position[0])* block_size, (self.y + position[1]) * block_size, block_size, block_size))
@@ -156,6 +161,8 @@ while run:
                 next_pos = current_piece.get_next_blocks_position((1, 0))
                 if blocks_manager.are_valid(next_pos):
                     current_piece.slides(1)
+            if event.key == pygame.K_UP:
+                current_piece.rotate()
 
         if event.type == fall_event:
             next_pos = current_piece.get_next_blocks_position((0, 1))
