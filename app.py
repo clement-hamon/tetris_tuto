@@ -228,7 +228,7 @@ class BlocksManager(object):
                 blocks_per_row[block[1]] = 1
             else:
                 blocks_per_row[block[1]] += 1
-        return blocks_per_row
+        return dict(sorted(blocks_per_row.items()))
 
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
