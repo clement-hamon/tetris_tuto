@@ -8,11 +8,27 @@ num_of_rows = screen_height // block_size
 num_of_cols = screen_width // block_size
 
 screen = pygame.display.set_mode([screen_width, screen_height])
-L = ['.....',
+
+L = [['.....',
       '...0.',
       '.000.',
       '.....',
-      '.....']
+      '.....'],
+     ['.....',
+      '..0..',
+      '..0..',
+      '..00.',
+      '.....'],
+     ['.....',
+      '.....',
+      '.000.',
+      '.0...',
+      '.....'],
+     ['.....',
+      '.00..',
+      '..0..',
+      '..0..',
+      '.....']]
 
 def draw_grid(surface):
     # draw horizontal lines
@@ -24,16 +40,18 @@ def draw_grid(surface):
 
 class Piece(object):
     def __init__(self, shape, x, y):
-        self.shape = self.convert_shape_format(shape)
+        self.shape = shape
         self.x = x
         self.y = y
+        self.rotation = 0
+        self.blocks_positions = self.convert_shape_format(shape[0])
     
     def get_position(self):
         return (self.x, self.y)
     
     def get_blocks_position(self):
         positions = []
-        for position in self.shape:
+        for position in self.blocks_positions:
             positions.append((self.x + position[0], self.y  + position[1]))
         return positions
             
@@ -42,7 +60,7 @@ class Piece(object):
 
     def get_next_blocks_position(self, next_position):
         positions = []
-        for position in self.shape:
+        for position in self.blocks_positions:
             positions.append((self.x + position[0] + next_position[0], self.y  + position[1] + next_position[1]))
         return positions
     
@@ -61,7 +79,7 @@ class Piece(object):
         self.x += coef
     
     def draw(self, surface):
-        for position in self.shape:
+        for position in self.blocks_positions:
             pygame.draw.rect(surface, (125, 125, 125), ((self.x + position[0])* block_size, (self.y + position[1]) * block_size, block_size, block_size))
 
 
