@@ -216,8 +216,10 @@ class BlocksManager(object):
 
     def remove_full_rows(self):
         block_counter = self.count_blocks_per_row()
+        full_rows_count = 0
         for row, count in block_counter.items():
             if count >= num_of_cols:
+                full_rows_count += 1
                 positions_to_remove = [(x, row) for x in range(num_of_cols)]
                 for position in positions_to_remove:
                     del self.blocks[position]
@@ -226,6 +228,7 @@ class BlocksManager(object):
                         if (x, y - 1) in self.blocks:
                             self.blocks[(x, y)] = self.blocks[(x, y - 1)]
                             del self.blocks[(x, y - 1)]
+        return full_rows_count
 
     def count_blocks_per_row(self):
         blocks_per_row = {}  # {12: 2, 13: 5,... }
@@ -281,8 +284,7 @@ while run:
             else:
                 blocks_manager.add_blocks(current_piece.get_blocks_position(), current_piece.color)
                 current_piece = Piece.create()
-                blocks_manager.remove_full_rows()
-
+                score += blocks_manager.remove_full_rows()
 
     screen.fill([0, 0, 0])
     current_piece.draw(screen)
