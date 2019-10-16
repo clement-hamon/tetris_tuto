@@ -7,6 +7,7 @@ screen_height = 600
 block_size = 30
 num_of_rows = screen_height // block_size
 num_of_cols = screen_width // block_size
+grid_color = (25, 25, 25)
 
 screen = pygame.display.set_mode([screen_width, screen_height])
 
@@ -118,10 +119,10 @@ colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0),
 def draw_grid(surface):
     # draw horizontal lines
     for i in range(num_of_rows):
-        pygame.draw.line(surface, (125, 125, 125), (0, block_size * i),(screen_width, block_size * i))
+        pygame.draw.line(surface, grid_color, (0, block_size * i),(screen_width, block_size * i))
     # draw vertical lines
     for j in range(num_of_cols):
-        pygame.draw.line(surface, (125, 125, 125), (block_size * j, 0),(block_size * j, screen_height))
+        pygame.draw.line(surface, grid_color, (block_size * j, 0),(block_size * j, screen_height))
 
 class Piece(object):
     def __init__(self, shape, color, x, y):
@@ -265,10 +266,11 @@ while run:
 
 
     screen.fill([0, 0, 0])
-    draw_grid(screen)
     current_piece.draw(screen)
 
     for position, color in blocks_manager.blocks.items():
         pygame.draw.rect(screen, color, ((position[0]) * block_size, (position[1]) * block_size, block_size, block_size))
+    
+    draw_grid(screen)
 
     pygame.display.update()
