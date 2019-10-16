@@ -267,6 +267,10 @@ while run:
                 next_pos = current_piece.get_next_rotation_blocks_position()
                 if blocks_manager.are_valid(next_pos):
                     current_piece.rotate()
+            if event.key == pygame.K_SPACE:
+                while blocks_manager.are_valid(current_piece.get_next_blocks_position((0, 1))):
+                    current_piece.falls()
+
 
         if event.type == fall_event:
             next_pos = current_piece.get_next_blocks_position((0, 1))
