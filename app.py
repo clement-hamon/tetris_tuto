@@ -19,26 +19,6 @@ def draw_grid(surface):
     for j in range(num_of_cols):
         pygame.draw.line(surface, (125, 125, 125), (block_size * j, 0),(block_size * j, screen_height))
 
-class Block(object):
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    
-    def get_position(self):
-        return (self.x, self.y)
-
-    def get_next_position(self, position):
-        return (self.x + position[0], self.y + position[1])
-
-    def falls(self):
-        self.y += 1
-    
-    def slides(self, coef):
-        self.x += coef
-
-    def draw(self, surface):
-        pygame.draw.rect(surface, (125, 125, 125), (self.x * block_size, self.y * block_size, block_size, block_size))
-
 class Piece(object):
     def __init__(self, shape, x, y):
         self.shape = shape
@@ -47,6 +27,27 @@ class Piece(object):
     
     def get_position(self):
         return (self.x, self.y)
+    
+    def get_blocks_position(self):
+        positions = []
+        for position in self.shape:
+            positions.append((self.x + position[0], self.y  + position[1]))
+        return positions
+            
+    def get_next_position(self, position):
+        return (self.x + position[0], self.y + position[1])
+
+    def get_next_blocks_position(self, next_position):
+        positions = []
+        for position in self.shape:
+            positions.append((self.x + position[0] + next_position[0], self.y  + position[1] + next_position[1]))
+        return positions
+
+    def falls(self):
+        self.y += 1
+    
+    def slides(self, coef):
+        self.x += coef
     
     def draw(self, surface):
         for position in self.shape:
@@ -61,9 +62,19 @@ class BlocksManager(object):
     
     def add_block(self, position):
         self.blocks.append(position)
+    
+    def add_blocks(self, positions):
+        for position in positions:
+            self.blocks.append(position)
 
     def is_valid(self, position):
         return not (self.collide(position) or self.is_outside(position))
+
+    def are_valid(self, positions):
+        for position in positions:
+            if (self.collide(position) or self.is_outside(position)):
+                return False
+        return True
     
     def collide(self, position):
         return (position in self.blocks)
@@ -95,9 +106,9 @@ class BlocksManager(object):
 
 time_elapsed = pygame.time.get_ticks()
 fall_event = pygame.USEREVENT + 1
-pygame.time.set_timer(fall_event, 200)
+pygame.time.set_timer(fall_event, 500)
 
-current_piece = Piece(L, 2, 3)
+current_piece = Piece(L, 1, 1)
 current_block = Block(0, 0)
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 
@@ -110,27 +121,26 @@ while run:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                next_pos = current_block.get_next_position((-1, 0))
-                if blocks_manager.is_valid(next_pos):
-                    current_block.slides(-1)
+                next_pos = current_piece.get_next_blocks_position((-1, 0))
+                if blocks_manager.are_valid(next_pos):
+                    current_piece.slides(-1)
             if event.key == pygame.K_RIGHT:
-                next_pos = current_block.get_next_position((1, 0))
-                if blocks_manager.is_valid(next_pos):
-                    current_block.slides(1)
+                next_pos = current_piece.get_next_blocks_position((1, 0))
+                if blocks_manager.are_valid(next_pos):
+                    current_piece.slides(1)
 
         if event.type == fall_event:
-            next_pos = current_block.get_next_position((0, 1))
-            if blocks_manager.is_valid(next_pos):
-                current_block.falls()
+            next_pos = current_piece.get_next_blocks_position((0, 1))
+            if blocks_manager.are_valid(next_pos):
+                current_piece.falls()
             else:
-                blocks_manager.add_block(current_block.get_position())
-                current_block = Block(0, 0)
+                blocks_manager.add_blocks(current_piece.get_blocks_position())
+                current_piece = Piece(L, 1, 1)
                 blocks_manager.remove_full_rows()
 
 
     screen.fill([0, 0, 0])
     draw_grid(screen)
-    current_block.draw(screen)
     current_piece.draw(screen)
 
     for block in blocks_manager.blocks:
