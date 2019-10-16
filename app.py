@@ -122,10 +122,10 @@ colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0),
 
 def draw_grid(surface):
     # draw horizontal lines
-    for i in range(num_of_rows):
+    for i in range(num_of_rows + 1):
         pygame.draw.line(surface, grid_color, (game_x, game_y + (block_size * i)),(game_x + game_width, game_y + (block_size * i)))
     # draw vertical lines
-    for j in range(num_of_cols):
+    for j in range(num_of_cols + 1):
         pygame.draw.line(surface, grid_color, (game_x + (block_size * j), game_y),(game_x + (block_size * j), game_y + game_height))
 
 class Piece(object):
@@ -188,7 +188,8 @@ class Piece(object):
 
     def draw(self, surface):
         for position in self.blocks_positions:
-            pygame.draw.rect(surface, self.color, ((self.x + position[0]) * block_size + game_x, (self.y + position[1]) * block_size + game_y, block_size, block_size))
+            if self.y + position[1] >= 0:
+                pygame.draw.rect(surface, self.color, ((self.x + position[0]) * block_size + game_x, (self.y + position[1]) * block_size + game_y, block_size, block_size))
 
 
 class BlocksManager(object):
@@ -281,7 +282,7 @@ while run:
     current_piece.draw(screen)
 
     for position, color in blocks_manager.blocks.items():
-        pygame.draw.rect(screen, color, ((position[0]) * block_size, (position[1]) * block_size, block_size, block_size))
+        pygame.draw.rect(screen, color, ((position[0]) * block_size + game_x, (position[1]) * block_size+ game_y, block_size, block_size))
     
     draw_grid(screen)
 
