@@ -184,19 +184,13 @@ class Piece(object):
 
 class BlocksManager(object):
     def __init__(self, limit_x, limit_y):
-        self.blocks = [] # [(1, 2), (1, 3), ...]
+        self.blocks = {} # {(1, 2): (125, 125, 125), (1, 3) : (125, 125, 125), ...}
         self.limit_x = limit_x
         self.limit_y = limit_y
     
-    def add_block(self, position):
-        self.blocks.append(position)
-    
-    def add_blocks(self, positions):
+    def add_blocks(self, positions, color):
         for position in positions:
-            self.blocks.append(position)
-
-    def is_valid(self, position):
-        return not (self.collide(position) or self.is_outside(position))
+            self.blocks[position] = color
 
     def are_valid(self, positions):
         for position in positions:
@@ -205,7 +199,7 @@ class BlocksManager(object):
         return True
     
     def collide(self, position):
-        return (position in self.blocks)
+        return (position in self.blocks.keys())
 
     def is_outside(self, position):
         return (position[0] < self.limit_x['min'] or self.limit_x['max'] < position[0] or self.limit_y['max'] < position[1])
@@ -214,18 +208,18 @@ class BlocksManager(object):
         block_counter = self.count_blocks_per_row()
         for row, count in block_counter.items():
             if count >= num_of_cols:
-                blocks_to_remove = [(x, row) for x in range(num_of_cols)]
-                for block in blocks_to_remove:
-                    self.blocks.pop(self.blocks.index(block))
+                positions_to_remove = [(x, row) for x in range(num_of_cols)]
+                for position in positions_to_remove:
+                    del self.blocks[position]
                 for y in range(1, row + 1)[::-1]:
                     for x in range(num_of_cols):
                         if (x, y - 1) in self.blocks:
-                            self.blocks.append((x, y))
-                            self.blocks.pop(self.blocks.index((x, y - 1)))
+                            self.blocks[(x, y)] = self.blocks[(x, y - 1)]
+                            del self.blocks[(x, y - 1)]
 
     def count_blocks_per_row(self):
         blocks_per_row = {}  # {12: 2, 13: 5,... }
-        for block in self.blocks:
+        for block in self.blocks.keys():
             if not (block[1] in blocks_per_row):
                 blocks_per_row[block[1]] = 1
             else:
@@ -265,7 +259,7 @@ while run:
             if blocks_manager.are_valid(next_pos):
                 current_piece.falls()
             else:
-                blocks_manager.add_blocks(current_piece.get_blocks_position())
+                blocks_manager.add_blocks(current_piece.get_blocks_position(), current_piece.color)
                 current_piece = Piece(random.choice(shapes),random.choice(colors), 1, 1)
                 blocks_manager.remove_full_rows()
 
@@ -274,7 +268,7 @@ while run:
     draw_grid(screen)
     current_piece.draw(screen)
 
-    for block in blocks_manager.blocks:
-        pygame.draw.rect(screen, (125, 125, 125), ((block[0]) * block_size, (block[1]) * block_size, block_size, block_size))
+    for position, color in blocks_manager.blocks.items():
+        pygame.draw.rect(screen, color, ((position[0]) * block_size, (position[1]) * block_size, block_size, block_size))
 
     pygame.display.update()
