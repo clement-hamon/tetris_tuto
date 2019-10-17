@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 from pprint import pprint
 
 screen_width = 350
@@ -248,8 +249,15 @@ current_piece = Piece.create()
 blocks_manager = BlocksManager({"min": 0, "max": num_of_cols - 1}, {"min": 0, "max": num_of_rows - 1})
 score = 0
 
+clock = pygame.time.Clock()
+fall_time = 0
+fall_speed = 0.30
+
 run = True
 while run:
+
+    fall_time += clock.get_rawtime()
+    clock.tick()
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -276,15 +284,16 @@ while run:
                 while blocks_manager.are_valid(current_piece.get_next_blocks_position((0, 1))):
                     current_piece.falls()
 
-
-        if event.type == fall_event:
-            next_pos = current_piece.get_next_blocks_position((0, 1))
-            if blocks_manager.are_valid(next_pos):
-                current_piece.falls()
-            else:
-                blocks_manager.add_blocks(current_piece.get_blocks_position(), current_piece.color)
-                current_piece = Piece.create()
-                score += blocks_manager.remove_full_rows()
+    if fall_time/1000 >= fall_speed:
+        fall_time = 0
+        next_pos = current_piece.get_next_blocks_position((0, 1))
+        if blocks_manager.are_valid(next_pos):
+            current_piece.falls()
+        else:
+            blocks_manager.add_blocks(current_piece.get_blocks_position(), current_piece.color)
+            current_piece = Piece.create()
+            score += blocks_manager.remove_full_rows()
+            fall_speed = 0.30 - (math.sqrt(pygame.time.get_ticks()) / 5000)
 
     screen.fill([0, 0, 0])
     current_piece.draw(screen)
@@ -294,6 +303,7 @@ while run:
     
     draw_grid(screen)
     text = font.render(str(score), True, (125, 125, 125))
+    text = font.render(str(fall_speed), True, (125, 125, 125))
     screen.blit(text, ((screen_width // 2) - (text.get_width() // 2), 10))
 
     pygame.display.update()
