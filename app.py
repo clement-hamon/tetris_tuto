@@ -201,7 +201,11 @@ class BlocksManager(object):
     
     def add_blocks(self, positions, color):
         for position in positions:
-            self.blocks[position] = color
+            if position[1] < self.limit_y['min']:
+                return False
+            else :
+                self.blocks[position] = color
+        return True
 
     def are_valid(self, positions):
         for position in positions:
@@ -290,7 +294,7 @@ while run:
         if blocks_manager.are_valid(next_pos):
             current_piece.falls()
         else:
-            blocks_manager.add_blocks(current_piece.get_blocks_position(), current_piece.color)
+            run = blocks_manager.add_blocks(current_piece.get_blocks_position(), current_piece.color)
             current_piece = Piece.create()
             score += blocks_manager.remove_full_rows()
             fall_speed = 0.30 - (math.sqrt(pygame.time.get_ticks()) / 5000)
@@ -303,7 +307,12 @@ while run:
     
     draw_grid(screen)
     text = font.render(str(score), True, (125, 125, 125))
-    text = font.render(str(fall_speed), True, (125, 125, 125))
     screen.blit(text, ((screen_width // 2) - (text.get_width() // 2), 10))
 
     pygame.display.update()
+
+screen.fill((0, 0, 0))
+text = font.render("GAME OVER", True, (125, 125, 125))
+screen.blit(text, ((screen_width // 2) - (text.get_width() // 2), screen_height // 2))
+pygame.display.update()
+pygame.time.delay(3000)
